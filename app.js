@@ -34,12 +34,13 @@ app.use(cookieParser());
 
 app.use(bodyParser.json());
 
-
-// Регистрация нового пользователя
+// РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 app.post('/signup', createUser);
 
-// Аутентификация пользователя
+// АУТЕНТИФИКАЦИЯ ПОЛЬЗОВАТЕЛЯ
 app.post('/signin', login);
+
+// ПРОВЕРКА АУТЕНТИФИКАЦИИ
 
 app.use(checkAuth);
 

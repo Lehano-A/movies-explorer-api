@@ -7,10 +7,10 @@ const {
   updateUserData,
 } = require('../controllers/users');
 
-// Возвращает информацию о пользователе (email и имя)
+// ВОЗВРАЩАЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕ (EMAIL И NAME)
 router.get('/me', userData);
 
-// Обновляет информацию о пользователе (email и имя)
+// ОБНОВЛЯЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕЙ (EMAIL И NAME)
 router.patch('/me', updateUserData);
 
 module.exports = router;

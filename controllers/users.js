@@ -8,7 +8,7 @@ const User = require('../models/user');
 
 const ConflictError = require('../handlerErrors/ConflictError');
 
-// Регистрация нового пользователя
+// РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 function createUser(req, res, next) {
   const { email, password, name } = req.body;
 
@@ -27,18 +27,18 @@ function createUser(req, res, next) {
             },
           });
         })
-        .catch(next);
+        .catch(() => next(new ConflictError('Пользователь с таким email уже зарегистрирован')));
     })
     .catch(next);
 }
 
-// Аутентификация пользователя
+// АУТЕНТИФИКАЦИЯ ПОЛЬЗОВАТЕЛЯ
 function login(req, res, next) {
   const { email, password } = req.body;
 
   User.findUserByCredential(email, password)
     .then((user) => {
-      const token = jwt.sign({ data: { id: user._id } }, NODE_ENV === 'production' ? JWT_SECRET : 'development', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'development', { expiresIn: '7d' });
 
       res.cookie('jwt', token, { maxAge: 3600000 * 7 * 24, httpOnly: true });
       res.send({ message: 'Вы успешно зашли в систему' });
@@ -46,14 +46,34 @@ function login(req, res, next) {
     .catch(next);
 }
 
-// Возвращает информацию о пользователе (email и имя)
-function userData() {
-  console.log('Данные вашего профайла');
+// ВОЗВРАЩАЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕ (EMAIL И NAME)
+function userData(req, res, next) {
+  const { _id } = req.body.data;
+  User.findById({ _id })
+    .then((user) => {
+      res.send({
+        data: {
+          email: user.email,
+          name: user.name,
+        },
+      });
+    })
+    .catch(next);
 }
 
-// Обновляет информацию о пользователе (email и имя)
-function updateUserData() {
-  console.log('Обновили данные пользователя');
+// ОБНОВЛЯЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕЙ (EMAIL И NAME)
+function updateUserData(req, res, next) {
+  const { email, name } = req.body;
+  const { _id } = req.body.payload;
+
+  User.findByIdAndUpdate({ _id }, { email, name }, { new: true })
+    .then((user) => {
+      res.send({
+        email: user.email,
+        name: user.name,
+      });
+    })
+    .catch(next);
 }
 
 module.exports = {

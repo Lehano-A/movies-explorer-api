@@ -11,8 +11,18 @@ function checkAuth(req, res, next) {
     return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу'));
   }
 
-  // console.log(jwt.verify(jwtToken, NODE_ENV === 'production' ? JWT_SECRET : 'development'));
+  let payload;
 
+  try {
+    // ЕСЛИ ТОКЕН ВАЛИДЕН
+    payload = jwt.verify(jwtToken, NODE_ENV === 'production' ? JWT_SECRET : 'development');
+
+    // ЕСЛИ ТОКЕН ОКАЗАЛСЯ НЕВАЛИДНЫМ
+  } catch (err) { return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу')); }
+
+  req.body.payload = payload;
+
+  return next();
 }
 
 module.exports = {
