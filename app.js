@@ -5,22 +5,23 @@ const mongoose = require('mongoose');
 
 const express = require('express');
 
+const {
+  celebrate,
+  Joi,
+  errors,
+  Segments,
+} = require('celebrate');
+
 const cookieParser = require('cookie-parser');
 
 const bodyParser = require('body-parser');
-
-const usersRouter = require('./routes/users');
 
 const {
   createUser,
   login,
 } = require('./controllers/users');
 
-const moviesRouter = require('./routes/movies');
-
 const app = express();
-
-const { alreadyRegisteredError, hasMessageError, validatorError, handlerCustomErrors } = require('./handlerErrors/customErrors');
 
 const { checkAuth } = require('./middlewares/checkAuth');
 
@@ -35,7 +36,13 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(7).max(70).required(),
+    name: Joi.string().min(2).max(30).required(),
+  }),
+}), createUser);
 
 // АУТЕНТИФИКАЦИЯ ПОЛЬЗОВАТЕЛЯ
 app.post('/signin', login);
@@ -44,10 +51,13 @@ app.post('/signin', login);
 
 app.use(checkAuth);
 
-app.use('/users', usersRouter);
+app.use('/users', require('./routes/users'));
 
-app.use('/movies', moviesRouter);
+app.use('/movies', require('./routes/movies'));
 
+app.use(errors());
+
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   // const customError = handlerCustomErrors(err);
@@ -57,7 +67,7 @@ app.use((err, req, res, next) => {
   // }
 
   res.status(statusCode).send({
-    message: statusCode === 500 /* && customError === false */ ? 'Приносим извинения - данный запрос не может быть выполнен сервером' : message
+    message: statusCode === 500 /* && customError === false */ ? 'Приносим извинения - данный запрос не может быть выполнен сервером' : message,
   });
 });
 

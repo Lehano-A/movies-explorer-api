@@ -6,12 +6,11 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require('../models/user');
 
-const ConflictError = require('../handlerErrors/ConflictError');
+// const ConflictError = require('../handlerErrors/ConflictError');
 
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 function createUser(req, res, next) {
   const { email, password, name } = req.body;
-
   bcrypt.hash(password, 10)
     .then((hash) => {
       User.create({
@@ -27,7 +26,7 @@ function createUser(req, res, next) {
             },
           });
         })
-        .catch(() => next(new ConflictError('Пользователь с таким email уже зарегистрирован')));
+        .catch(next);
     })
     .catch(next);
 }
@@ -48,7 +47,7 @@ function login(req, res, next) {
 
 // ВОЗВРАЩАЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕ (EMAIL И NAME)
 function userData(req, res, next) {
-  const { _id } = req.body.data;
+  const { _id } = req.user;
   User.findById({ _id })
     .then((user) => {
       res.send({
@@ -64,7 +63,7 @@ function userData(req, res, next) {
 // ОБНОВЛЯЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕЙ (EMAIL И NAME)
 function updateUserData(req, res, next) {
   const { email, name } = req.body;
-  const { _id } = req.body.payload;
+  const { _id } = req.user;
 
   User.findByIdAndUpdate({ _id }, { email, name }, { new: true })
     .then((user) => {

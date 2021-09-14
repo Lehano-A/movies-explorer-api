@@ -20,7 +20,7 @@ function checkAuth(req, res, next) {
     // ЕСЛИ ТОКЕН ОКАЗАЛСЯ НЕВАЛИДНЫМ
   } catch (err) { return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу')); }
 
-  req.body.payload = payload;
+  req.user = payload;
 
   return next();
 }

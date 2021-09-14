@@ -1,22 +1,65 @@
-// Возвращает все сохранённые пользователем фильмы
-function favouritesMovies() {
-  console.log('Получите все сохранённые вами фильмы');
+const Movie = require('../models/movie');
+
+// ВОЗВРАЩАЕТ ВСЕ СОХРАНЁННЫЕ ПОЛЬЗОВАТЕЛЕМ ФИЛЬМЫ
+function getFavouritesMovies(req, res, next) {
+  Movie.find({})
+    .then((movies) => { res.send(movies); })
+    .catch(next);
 }
 
-/* Создаёт фильм с переданными в теле:
+/* СОЗДАЁТ ДОКУМЕНТ-ФИЛЬМ С ПЕРЕДАННЫМИ В ТЕЛЕ ДАННЫМИ:
 country, director, duration, year, description, image,
 trailer, nameRU, nameEN и thumbnail, movieId */
-function createMovie() {
-  console.log('Вы создали новый фильм');
+function saveMovie(req, res, next) {
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailer,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
+  } = req.body;
+
+  const { _id } = req.user;
+
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailer,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
+    owner: _id,
+  })
+    .then((movie) => {
+      res.send(movie);
+    })
+    .catch(next);
 }
 
-// Удаляет сохранённый фильм по id
-function deleteMovie() {
-  console.log('Вы удалили сохранённый фильм');
+// УДАЛЯЕТ СОХРАНЁННЫЙ ФИЛЬМ ПО ID
+function deleteMovie(req, res, next) {
+  const { movieId } = req.params;
+
+  Movie.findOneAndDelete({ movieId })
+    .then((movie) => {
+      res.send(movie);
+    })
+    .catch(next);
 }
 
 module.exports = {
-  favouritesMovies,
-  createMovie,
+  getFavouritesMovies,
+  saveMovie,
   deleteMovie,
 };
