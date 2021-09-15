@@ -2,29 +2,30 @@ const mongoose = require('mongoose');
 
 const bcrypt = require('bcrypt');
 
-const { isEmail } = require('validator');
-
 const { UnauthorizedError } = require('../handlerErrors/UnauthorizedError');
 
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: [true, 'Это поле обязательно для заполнения'],
+    required: true,
     unique: true,
-    validate: (v) => isEmail(v),
   },
 
   password: {
     type: String,
-    required: [true, 'Это поле обязательно для заполнения'],
-    select: false,
+    required: true,
   },
 
   name: {
     type: String,
-    required: [true, 'Это поле обязательно для заполнения'],
+    required: true,
     minLength: 2,
     maxLength: 30,
+  },
+
+  created: {
+    type: Date,
+    default: Date.now(),
   },
 }, { versionKey: false });
 

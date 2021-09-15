@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 require('dotenv').config();
 
+const { URI_DATABASE } = process.env;
+
 const mongoose = require('mongoose');
 
 const express = require('express');
@@ -16,6 +18,8 @@ const cookieParser = require('cookie-parser');
 
 const bodyParser = require('body-parser');
 
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const {
   createUser,
   login,
@@ -25,52 +29,71 @@ const app = express();
 
 const { checkAuth } = require('./middlewares/checkAuth');
 
-mongoose.connect('mongodb://localhost:27017/bitmoviesdb');
+const { centralizedErrors } = require('./handlerErrors/centralizedErrors');
+
+mongoose.connect(URI_DATABASE);
 
 const port = 3000;
 
+const { NotFoundError } = require('./handlerErrors/NotFoundError');
+
+app.use(requestLogger);
+
 app.use(cookieParser());
 
-// app.use(express.static('public'));
+app.use(express.static('public'));
 
 app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 app.post('/signup', celebrate({
   [Segments.BODY]: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().min(7).max(70).required(),
+    password: Joi.string().alphanum().min(7).max(30)
+      .required()
+      .regex(/^[a-zA-Z0-9]{7,30}$/),
     name: Joi.string().min(2).max(30).required(),
   }),
 }), createUser);
 
 // АУТЕНТИФИКАЦИЯ ПОЛЬЗОВАТЕЛЯ
-app.post('/signin', login);
+app.post('/signin', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().alphanum().min(7).max(30)
+      .required()
+      .regex(/^[a-zA-Z0-9]{7,30}$/),
+  }),
+}), login);
 
 // ПРОВЕРКА АУТЕНТИФИКАЦИИ
 
-app.use(checkAuth);
+app.use(celebrate({
+  [Segments.COOKIES]: Joi.object().keys({
+    jwt: Joi.string(),
+  }),
+}), checkAuth);
 
 app.use('/users', require('./routes/users'));
 
 app.use('/movies', require('./routes/movies'));
 
+app.get('*', (req, res, next) => {
+  next(new NotFoundError('Такой страницы не нашлось'));
+});
+
+app.use(errorLogger);
+
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  // const customError = handlerCustomErrors(err);
-
-  // if (customError) {
-  //   err.message = customError;
-  // }
-
-  res.status(statusCode).send({
-    message: statusCode === 500 /* && customError === false */ ? 'Приносим извинения - данный запрос не может быть выполнен сервером' : message,
-  });
+  console.log('uimjyumuimumumyu');
+  centralizedErrors(err, req, res);
 });
 
 app.listen(port, () => {
-  console.log('Всё работает');
+  console.log('Сервер работает');
 });

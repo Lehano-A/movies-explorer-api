@@ -14,29 +14,33 @@ const {
 
 const { checkOwnerMovie } = require('../middlewares/checkOwnerMovie');
 
-// Возвращает все сохранённые пользователем фильмы
+// ВОЗВРАЩАЕТ ВСЕ СОХРАНЁННЫЕ ПОЛЬЗОВАТЕЛЕМ ФИЛЬМЫ
 router.get('/', getFavouritesMovies);
 
-/* Создаёт фильм с переданными в теле:
+/* СОЗДАЁТ ДОКУМЕНТ-ФИЛЬМ С ПЕРЕДАННЫМИ В ТЕЛЕ ДАННЫМИ:
 country, director, duration, year, description, image,
 trailer, nameRU, nameEN и thumbnail, movieId */
 router.post('/', celebrate({
   [Segments.BODY]: Joi.object().keys({
-    country: Joi.string().min(1).required(),
-    director: Joi.string().min(1).required(),
-    duration: Joi.string().min(1).required(),
-    year: Joi.number().min(2).required(),
-    description: Joi.string().min(1).required(),
-    image: Joi.string().required().regex(urlRegExp),
+    country: Joi.string().required(),
+    director: Joi.string().required(),
+    duration: Joi.string().required(),
+    year: Joi.number().integer().required(),
+    description: Joi.string().required(),
+    image: Joi.string().required(),
     trailer: Joi.string().required().regex(urlRegExp),
-    nameRU: Joi.string().min(1).required(),
-    nameEN: Joi.string().min(1).required(),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
     thumbnail: Joi.string().required().regex(urlRegExp),
-    movieId: Joi.string().min(1).required(),
+    movieId: Joi.string().required(),
   }),
 }), saveMovie);
 
-// Удаляет сохранённый фильм по id
-router.delete('/:movieId', checkOwnerMovie, deleteMovie);
+// УДАЛЯЕТ СОХРАНЁННЫЙ ФИЛЬМ ПО ID
+router.delete('/:movieId', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    movieId: Joi.string().required(),
+  }),
+}), checkOwnerMovie, deleteMovie);
 
 module.exports = router;

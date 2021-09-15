@@ -1,43 +1,20 @@
-const alreadyRegisteredError = 'duplicate key error collection';
+const { NotFoundError } = require('./NotFoundError');
 
-const validatorError = 'ValidatorError';
-
-const mongoErrors = {
-  ValidatorError: ['ValidationError User validation failed: name: Это поле обязательно для заполнения'],
-  MongoServerError: ['duplicate key error collection', 'wcewcergrbtrbrtb', 'sdcdscsdcsdc'],
+const messageError = {
+  cardNotFound: "Cannot read property 'owner' of null",
 };
 
-const customErrors = [
-  'Пользователь с таким email уже зарегистрирован',
-];
+const { cardNotFound } = messageError;
 
-function checkMessageError(error, message) {
-  return error[1].find((item) => message.includes(item));
-}
-
-function checkNameError(name) {
-  return Object.entries(mongoErrors).find((item) => item.includes(name));
-}
-
-function handlerCustomErrors(err, req, res, next) {
-  const { name, message } = err;
-  const nameError = checkNameError(name);
-  const messageError = checkMessageError(nameError, message);
-
-  return messageError ? message : false;
-}
-/* const hasMessageError = (err, message) => {
-  if (err.includes(message)) {
-    return true;
+function handlerCustomErrors(err, next) {
+  console.log(err.message === cardNotFound);
+  if (err.message === cardNotFound) {
+    return next(new NotFoundError('Такой карточки не существует'));
   }
-  return false;
-}; */
+  console.log('qqqqqqqqqqqqqqq');
+  return undefined;
+}
 
 module.exports = {
-  alreadyRegisteredError,
-  validatorError,
   handlerCustomErrors,
-  /*   hasMessageError, */
 };
-
-

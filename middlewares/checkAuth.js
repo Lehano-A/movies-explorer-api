@@ -18,7 +18,10 @@ function checkAuth(req, res, next) {
     payload = jwt.verify(jwtToken, NODE_ENV === 'production' ? JWT_SECRET : 'development');
 
     // ЕСЛИ ТОКЕН ОКАЗАЛСЯ НЕВАЛИДНЫМ
-  } catch (err) { return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу')); }
+  } catch (err) {
+    res.clearCookie('jwt');
+    return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу'));
+  }
 
   req.user = payload;
 

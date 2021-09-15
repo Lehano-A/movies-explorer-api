@@ -52,11 +52,16 @@ const movieSchema = new mongoose.Schema({
   movieId: {
     type: String,
     required: true,
+    unique: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  created: {
+    type: Date,
+    default: Date.now(),
   },
 }, { versionKey: false });
 

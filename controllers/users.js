@@ -65,7 +65,7 @@ function updateUserData(req, res, next) {
   const { email, name } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate({ _id }, { email, name }, { new: true })
+  User.findByIdAndUpdate({ _id }, { email, name }, { new: true, runValidators: true })
     .then((user) => {
       res.send({
         email: user.email,
