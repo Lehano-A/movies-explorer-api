@@ -7,12 +7,16 @@ const mongoose = require('mongoose');
 
 const express = require('express');
 
+const cors = require('cors');
+
 const {
   celebrate,
   Joi,
   errors,
   Segments,
 } = require('celebrate');
+
+const helmet = require('helmet');
 
 const cookieParser = require('cookie-parser');
 
@@ -37,6 +41,12 @@ const port = 3000;
 
 const { NotFoundError } = require('./handlerErrors/NotFoundError');
 
+const { emailRegExp, nameRegExp } = require('./utils/constants');
+
+app.use(cors());
+
+app.use(helmet());
+
 app.use(requestLogger);
 
 app.use(cookieParser());
@@ -50,21 +60,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 app.post('/signup', celebrate({
   [Segments.BODY]: Joi.object().keys({
-    email: Joi.string().email().required(),
+    email: Joi.string().max(50).required()
+      .regex(emailRegExp),
     password: Joi.string().alphanum().min(7).max(30)
-      .required()
-      .regex(/^[a-zA-Z0-9]{7,30}$/),
-    name: Joi.string().min(2).max(30).required(),
+      .required(),
+    name: Joi.string().min(2).max(30).required()
+      .regex(nameRegExp),
   }),
 }), createUser);
 
 // АУТЕНТИФИКАЦИЯ ПОЛЬЗОВАТЕЛЯ
 app.post('/signin', celebrate({
   [Segments.BODY]: Joi.object().keys({
-    email: Joi.string().email().required(),
+    email: Joi.string().email().max(50).required()
+      .regex(emailRegExp),
     password: Joi.string().alphanum().min(7).max(30)
-      .required()
-      .regex(/^[a-zA-Z0-9]{7,30}$/),
+      .required(),
   }),
 }), login);
 
