@@ -8,6 +8,8 @@ const express = require('express');
 
 const cors = require('cors');
 
+const path = require('path');
+
 const {
   celebrate,
   Joi,
@@ -54,7 +56,7 @@ app.use(requestLogger);
 
 app.use(cookieParser());
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 
