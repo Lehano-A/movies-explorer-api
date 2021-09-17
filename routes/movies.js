@@ -39,7 +39,7 @@ router.post('/', celebrate({
 // УДАЛЯЕТ СОХРАНЁННЫЙ ФИЛЬМ ПО ID
 router.delete('/:movieId', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    movieId: Joi.string().max(50).required(),
+    movieId: Joi.string().max(100).required(),
   }),
 }), checkOwnerMovie, deleteMovie);
 

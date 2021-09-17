@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const { UnauthorizedError } = require('../handlerErrors/UnauthorizedError');
+const { UnauthorizedError } = require('../utils/handlerErrors/UnauthorizedError');
 
+// ПРОВЕРКА СТАТУСА АВТОРИЗАЦИИ
 function checkAuth(req, res, next) {
   const jwtToken = req.cookies.jwt;
 

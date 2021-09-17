@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 
 const bcrypt = require('bcrypt');
 
-const { UnauthorizedError } = require('../handlerErrors/UnauthorizedError');
+const { UnauthorizedError } = require('../utils/handlerErrors/UnauthorizedError');
 
+const { currentDate } = require('../utils/constants');
+
+// СХЕМА ПОЛЬЗОВАТЕЛЯ
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -24,8 +27,8 @@ const userSchema = new mongoose.Schema({
   },
 
   created: {
-    type: Date,
-    default: Date.now(),
+    type: String,
+    default: currentDate,
   },
 }, { versionKey: false });
 
@@ -39,14 +42,13 @@ userSchema.static('findUserByCredential', function checkToken(email, password) {
         return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
       }
 
-      bcrypt.compare(password, hash) // ЕСЛИ НАШЁЛСЯ, ТО ПРОВЕРЯЕМ СОВПАДЕНИЕ ПАРОЛЯ С ХЭШЕМ
+      return bcrypt.compare(password, hash) // ЕСЛИ НАШЁЛСЯ, ТО ПРОВЕРЯЕМ СОВПАДЕНИЕ ПАРОЛЯ С ХЭШЕМ
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
           }
           return user;
         });
-      return user;
     });
 });
 

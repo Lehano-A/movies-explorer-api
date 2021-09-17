@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+const { currentDate } = require('../utils/constants');
+
+// СХЕМА ФИЛЬМА
 const movieSchema = new mongoose.Schema({
 
   country: {
@@ -60,8 +63,8 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   created: {
-    type: Date,
-    default: Date.now(),
+    type: String,
+    default: currentDate,
   },
 }, { versionKey: false });
 
