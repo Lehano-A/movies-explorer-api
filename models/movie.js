@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const validator = require('validator');
+
 const { currentDate } = require('../utils/constants');
 
 // СХЕМА ФИЛЬМА
@@ -38,11 +40,17 @@ const movieSchema = new mongoose.Schema({
   trailer: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => validator.isURL(v),
+    },
   },
 
   thumbnail: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => validator.isURL(v),
+    },
   },
   nameRU: {
     type: String,

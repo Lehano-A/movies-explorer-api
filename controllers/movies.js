@@ -49,9 +49,9 @@ function saveMovie(req, res, next) {
 
 // УДАЛЯЕТ СОХРАНЁННЫЙ ФИЛЬМ ПО ID
 function deleteMovie(req, res, next) {
-  const { movieId } = req.params;
+  const { _id } = req.params;
 
-  Movie.findOneAndDelete({ movieId })
+  Movie.findOneAndDelete({ _id })
     .then((movie) => {
       res.send(movie);
     })

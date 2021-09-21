@@ -6,6 +6,10 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require('../models/user');
 
+const { ConflictError } = require('../utils/handlerErrors/ConflictError');
+
+const { currentDate } = require('../utils/constants');
+
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 function createUser(req, res, next) {
   const { email, password, name } = req.body;
@@ -24,9 +28,10 @@ function createUser(req, res, next) {
               name: user.name,
               created: user.created,
             },
+            message: 'Регистрация прошла успешно',
           });
         })
-        .catch(next);
+        .catch(() => { next(new ConflictError('Пользователь с таким email уже существует')); });
     })
     .catch(next);
 }
@@ -40,9 +45,15 @@ function login(req, res, next) {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'development', { expiresIn: '7d' });
 
       res.cookie('jwt', token, { maxAge: 3600000 * 7 * 24, httpOnly: true });
+
       res.send({
-        user,
-        message: 'Вы успешно зашли в систему',
+        user: {
+          _id: user._id,
+          email: user.email,
+          name: user.name,
+          created: user.created,
+        },
+        message: 'Авторизация прошла успешно',
       });
     })
     .catch(next);
@@ -61,13 +72,18 @@ function userData(req, res, next) {
 
 // ОБНОВЛЯЕТ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕ (EMAIL И NAME)
 function updateUserData(req, res, next) {
-  const { email, name } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate(_id, { email, name }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
     .select('-password')
     .then((user) => {
-      res.send({ user });
+      res.send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        created: user.created,
+        updated: currentDate(),
+      });
     })
     .catch(next);
 }

@@ -36,13 +36,11 @@ userSchema.static('findUserByCredential', function checkToken(email, password) {
   return this.findOne({ email })
     .select('+password')
     .then((user) => {
-      const hash = user.password;
-
       if (!user) { // ЕСЛИ ПОЛЬЗОВАТЕЛЬ НЕ НАШЁЛСЯ
         return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
       }
-
-      return bcrypt.compare(password, hash) // ЕСЛИ НАШЁЛСЯ, ТО ПРОВЕРЯЕМ СОВПАДЕНИЕ ПАРОЛЯ С ХЭШЕМ
+      // ЕСЛИ НАШЁЛСЯ, ТО ПРОВЕРЯЕМ СОВПАДЕНИЕ ПАРОЛЯ С ХЭШЕМ
+      return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));

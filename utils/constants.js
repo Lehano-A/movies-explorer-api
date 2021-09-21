@@ -2,7 +2,7 @@
 module.exports.urlRegExp = /^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/;
 
 // ПРОВЕРКА EMAIL
-module.exports.emailRegExp = /^(([-_.]?([a-zA-Z0-9]))+)@([a-zA-Z0-9]+(-)?[a-zA-Z0-9]+)+\.([a-z]+)$/;
+module.exports.emailRegExp = /^(([-.]?([a-zA-Z0-9])[_]?)+)@([a-zA-Z0-9]+(-)?[a-zA-Z0-9]+)+\.([a-z]+)$/;
 
 // ПРОВЕРКА СИМВОЛОВ ИМЕНИ
 module.exports.nameRegExp = /^([a-zA-Z]){2,30}$|^([а-яА-Я]){2,30}$/;
