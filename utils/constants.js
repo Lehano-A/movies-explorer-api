@@ -1,15 +1,9 @@
-// ПРОВЕРКА КОРРЕКТНОСТИ СИНТАКСИСА ССЫЛКИ НА ИЗОБРАЖЕНИЕ
-module.exports.urlRegExp = /^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/;
-
-// ПРОВЕРКА EMAIL
-module.exports.emailRegExp = /^(([-.]?([a-zA-Z0-9])[_]?)+)@([a-zA-Z0-9]+(-)?[a-zA-Z0-9]+)+\.([a-z]+)$/;
-
 // ПРОВЕРКА СИМВОЛОВ ИМЕНИ
-module.exports.nameRegExp = /^([a-zA-Z]){2,30}$|^([а-яА-Я]){2,30}$/;
+const nameRegExp = /^([a-zA-Z]){2,30}$|^([а-яА-Я]){2,30}$/;
 
 // ПОЛУЧЕНИЕ ТЕКУЩЕЙ ДАТЫ И ВРЕМЕНИ В УДОБНОМ ФОРМАТЕ
 // date: 15.07.2021, time: 14:21:35
-module.exports.currentDate = function comfortDate() {
+const currentDate = function comfortDate() {
   const date = new Date();
   const day = date.getDate();
   const month = date.getMonth() + 1;
@@ -19,9 +13,49 @@ module.exports.currentDate = function comfortDate() {
   const seconds = date.getSeconds();
 
   function pasteZero(number) {
-    // eslint-disable-next-line prefer-template
-    return number < 10 ? '0' + number : number;
+    return number < 10 ? `0${number}` : number;
   }
 
   return `${pasteZero(day)}-${pasteZero(month)}-${pasteZero(year)}, ${pasteZero(hours)}:${pasteZero(minutes)}:${pasteZero(seconds)}`;
+};
+
+const needAuth = 'Вам необходимо авторизоваться для получения доступа к ресурсу';
+
+const successfulLogout = 'Вы успешно вышли из системы';
+
+const successfulAuth = 'Авторизация прошла успешно';
+
+const successfulReg = 'Регистрация прошла успешно';
+
+const userWithEmailAlreadyExists = 'Пользователь с таким email уже существует';
+
+const cardDoesNotExist = 'Такой карточки на сервере не существует';
+
+const notOwnerThisCard = 'Вы не являетесь владельцем этой карточки';
+
+const tooManyRequests = 'С вашего IP поступило слишком много запросов. Попробуйте повторить попытку через 1 час.';
+
+const linkImageNotValid = 'Ссылка на изображение невалидна';
+
+const emailOrPasswordIncorrect = 'Неправильные почта или пароль';
+
+const notFoundPage = 'Такой страницы не нашлось';
+
+const requestCanNotBeExecutedServer = 'Данный запрос не может быть выполнен сервером';
+
+module.exports = {
+  nameRegExp,
+  currentDate,
+  needAuth,
+  successfulLogout,
+  userWithEmailAlreadyExists,
+  successfulAuth,
+  successfulReg,
+  cardDoesNotExist,
+  notOwnerThisCard,
+  tooManyRequests,
+  linkImageNotValid,
+  emailOrPasswordIncorrect,
+  notFoundPage,
+  requestCanNotBeExecutedServer,
 };

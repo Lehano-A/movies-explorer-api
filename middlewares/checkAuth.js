@@ -4,12 +4,14 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const { UnauthorizedError } = require('../utils/handlerErrors/UnauthorizedError');
 
+const { needAuth } = require('../utils/constants');
+
 // ПРОВЕРКА СТАТУСА АВТОРИЗАЦИИ
 function checkAuth(req, res, next) {
   const jwtToken = req.cookies.jwt;
 
   if (!jwtToken) {
-    return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу'));
+    return next(new UnauthorizedError(needAuth));
   }
 
   let payload;
@@ -21,7 +23,7 @@ function checkAuth(req, res, next) {
     // ЕСЛИ ТОКЕН ОКАЗАЛСЯ НЕВАЛИДНЫМ
   } catch (err) {
     res.clearCookie('jwt');
-    return next(new UnauthorizedError('Вам необходимо авторизоваться для получения доступа к ресурсу'));
+    return next(new UnauthorizedError(needAuth));
   }
 
   req.user = payload;

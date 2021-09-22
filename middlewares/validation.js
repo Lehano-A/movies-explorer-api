@@ -2,38 +2,38 @@ const { celebrate, Joi, Segments } = require('celebrate');
 
 const validator = require('validator');
 
-const { nameRegExp } = require('../utils/constants');
+const { nameRegExp, linkImageNotValid } = require('../utils/constants');
 
 // ВАЛИДАЦИЯ ПЕРЕД СОХРАНЕНИЕМ НОВОГО ФИЛЬМА
 const validatePostNewMovie = celebrate({
   [Segments.BODY]: Joi.object().keys({
     country: Joi.string().required(),
     director: Joi.string().required(),
-    duration: Joi.string().required(),
+    duration: Joi.number().required(),
     year: Joi.number().integer().required(),
     description: Joi.string().required(),
     image: Joi.string().required().custom((v, helper) => {
       if (validator.isURL(v, { protocols: ['http', 'https', 'ftp'], require_tld: true, require_protocol: true })) { return v; }
-      return helper.message('Ссылка на изображение невалидна');
+      return helper.message(linkImageNotValid);
     }),
     trailer: Joi.string().required().custom((v, helper) => {
       if (validator.isURL(v, { protocols: ['http', 'https', 'ftp'], require_tld: true, require_protocol: true })) { return v; }
-      return helper.message('Ссылка на изображение невалидна');
+      return helper.message(linkImageNotValid);
     }),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
     thumbnail: Joi.string().required().custom((v, helper) => {
       if (validator.isURL(v, { protocols: ['http', 'https', 'ftp'], require_tld: true, require_protocol: true })) { return v; }
-      return helper.message('Ссылка на изображение невалидна');
+      return helper.message(linkImageNotValid);
     }),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
   }),
 });
 
 // ВАЛИДАЦИЯ ПЕРЕД УДАЛЕНИЕМ ФИЛЬМА
 const validateDeleteMovie = celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    _id: Joi.string().max(100).required(),
+    _id: Joi.string().hex().max(24).required(),
   }),
 });
 

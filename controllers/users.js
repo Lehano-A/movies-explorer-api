@@ -8,7 +8,13 @@ const User = require('../models/user');
 
 const { ConflictError } = require('../utils/handlerErrors/ConflictError');
 
-const { currentDate } = require('../utils/constants');
+const {
+  currentDate,
+  successfulLogout,
+  userWithEmailAlreadyExists,
+  successfulAuth,
+  successfulReg,
+} = require('../utils/constants');
 
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
 function createUser(req, res, next) {
@@ -28,10 +34,10 @@ function createUser(req, res, next) {
               name: user.name,
               created: user.created,
             },
-            message: 'Регистрация прошла успешно',
+            message: successfulReg,
           });
         })
-        .catch(() => { next(new ConflictError('Пользователь с таким email уже существует')); });
+        .catch(() => { next(new ConflictError(userWithEmailAlreadyExists)); });
     })
     .catch(next);
 }
@@ -53,7 +59,7 @@ function login(req, res, next) {
           name: user.name,
           created: user.created,
         },
-        message: 'Авторизация прошла успешно',
+        message: successfulAuth,
       });
     })
     .catch(next);
@@ -95,7 +101,7 @@ function logout(req, res, next) {
     .select('-password')
     .then((user) => {
       res.clearCookie('jwt');
-      res.send({ user, message: 'Вы успешно вышли из системы' });
+      res.send({ user, message: successfulLogout });
     })
     .catch(next);
 }

@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { URI_DATABASE, PORT = 3000 } = process.env;
+const { URI_DATABASE = 'mongodb://localhost:27017/devdb', PORT = 3000 } = process.env;
 
 const mongoose = require('mongoose');
 
@@ -63,7 +63,7 @@ app.use(errors());
 
 // ЦЕНТРАЛИЗОВАННЫЙ ОБРАБОТЧИК ОШИБОК
 app.use((err, req, res, next) => {
-  centralizedErrors(err, req, res);
+  centralizedErrors(err, req, res, next);
 });
 
 app.listen(PORT, () => {

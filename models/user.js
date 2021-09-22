@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const { UnauthorizedError } = require('../utils/handlerErrors/UnauthorizedError');
 
-const { currentDate } = require('../utils/constants');
+const { currentDate, emailOrPasswordIncorrect } = require('../utils/constants');
 
 // СХЕМА ПОЛЬЗОВАТЕЛЯ
 const userSchema = new mongoose.Schema({
@@ -37,13 +37,13 @@ userSchema.static('findUserByCredential', function checkToken(email, password) {
     .select('+password')
     .then((user) => {
       if (!user) { // ЕСЛИ ПОЛЬЗОВАТЕЛЬ НЕ НАШЁЛСЯ
-        return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
+        return Promise.reject(new UnauthorizedError(emailOrPasswordIncorrect));
       }
       // ЕСЛИ НАШЁЛСЯ, ТО ПРОВЕРЯЕМ СОВПАДЕНИЕ ПАРОЛЯ С ХЭШЕМ
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
+            return Promise.reject(new UnauthorizedError(emailOrPasswordIncorrect));
           }
           return user;
         });

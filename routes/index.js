@@ -8,6 +8,8 @@ const { NotFoundError } = require('../utils/handlerErrors/NotFoundError');
 
 const { validateCookie } = require('../middlewares/validation');
 
+const { notFoundPage } = require('../utils/constants');
+
 // РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ И АУТЕНТИФИКАЦИЯ
 app.post('/sign(in|up)?', require('./signInUp'));
 
@@ -22,7 +24,7 @@ app.use('/movies', require('./movies'));
 
 // СТРАНИЦА 404 NOT FOUND
 app.all('*', (req, res, next) => {
-  next(new NotFoundError('Такой страницы не нашлось'));
+  next(new NotFoundError(notFoundPage));
 });
 
 module.exports = app;
